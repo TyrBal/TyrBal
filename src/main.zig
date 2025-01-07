@@ -264,6 +264,6 @@ pub fn main() !void {
     var lexer = Lexer.init(source_code);
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
-        std.debug.print("Token: {}\n", .{token});
+        std.debug.print("{}\n", .{token});
     }
 }
