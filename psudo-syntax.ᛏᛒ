@@ -1,0 +1,28 @@
+include file_name;
+ᛁᚾᚲᛚᚢᛞᛖ file_name;
+
+define function_name(argument1, argument2){
+    return argument1 - argument2;
+}
+ᛞᛖᚠᛁᚾᛖ function_name(argument1, argument2){
+    ᚱᛖᛏᚢᚱᚾ argument1 - argument2; 
+} 
+
+variable_name = value;
+pointer_name = *variable_name;
+
+list_name = [5];
+list_name[0] = value;
+
+for (i = 1; i>10; i++){}
+ᚠᛟᚱ (ᛁ = 1; ᛁ<10; ᛁ++){} 
+while(){}
+ᚹᚺᛁᛚᛖ(){} 
+
+if(){}
+ᛁᚠ(){} 
+elseif(){}
+ᛖᛚᛊᛖᛁᚠ(){} 
+else{}
+ᛖᛚᛊᛖ{}
+
