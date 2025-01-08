@@ -76,14 +76,20 @@ const Lexer = struct {
             _ = self.advance();
         }
         const text = self.source[self.start..self.current];
-        // zig fmt: off
-        // needed to turn of formatter to keep it from going all on 1 line :)
-        const token_type =
-            if (std.mem.eql(u8, text, "include")) TokenType.Include 
-            else if (std.mem.eql(u8, text, "define")) TokenType.Define 
-            else if (std.mem.eql(u8, text, "function")) TokenType.Function 
-            else TokenType.Identifier;
-        // zig fmt: on
+        const token_type = blk: {
+            if (std.mem.eql(u8, text, "include")) break :blk TokenType.Include;
+            if (std.mem.eql(u8, text, "define")) break :blk TokenType.Define;
+            if (std.mem.eql(u8, text, "function")) break :blk TokenType.Function;
+            if (std.mem.eql(u8, text, "if") or
+                std.mem.eql(u8, text, "elseif") or
+                std.mem.eql(u8, text, "else") or
+                std.mem.eql(u8, text, "while") or
+                std.mem.eql(u8, text, "for"))
+            {
+                break :blk TokenType.Keyword;
+            }
+            break :blk TokenType.Identifier;
+        };
         return Token{
             .type = token_type,
             .lexeme = text,
@@ -254,7 +260,7 @@ pub fn main() !void {
         \\list_name = [5];
         \\list_name[0] = value;
         \\for (i = 1; i>10; i++){} 
-        \\while(){} 
+        \\while(bolle==true){} 
         \\if(){}
         \\elseif(){} 
         \\else{}
@@ -265,5 +271,10 @@ pub fn main() !void {
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
         std.debug.print("{}\n", .{token});
+        const file = try std.fs.cwd().createFile(
+            "binary",
+            .{ .read = true },
+        );
+        defer file.close();
     }
 }
