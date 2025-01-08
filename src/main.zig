@@ -249,6 +249,17 @@ const Lexer = struct {
     }
 };
 
+// function to convert ASCII to binary
+fn asciiToBinary(ascii: u8) [8]u8 {
+    var binary: [8]u8 = undefined;
+    var value = ascii;
+    for (0..8) |i| {
+        binary[7 - i] = @as(u8, @truncate(value % 2));
+        value /= 2;
+    }
+    return binary;
+}
+
 pub fn main() !void {
     const source_code =
         \\include file_name;
@@ -268,13 +279,22 @@ pub fn main() !void {
     ;
 
     var lexer = Lexer.init(source_code);
+
+    const file = try std.fs.cwd().createFile(
+        "binary",
+        .{ .read = true },
+    );
+    defer file.close();
+
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
         std.debug.print("{}\n", .{token});
-        const file = try std.fs.cwd().createFile(
-            "binary",
-            .{ .read = true },
-        );
-        defer file.close();
+
+        // convert each character in token.lexeme to binary and write to file
+        // TODO Endre fra .lexeme til å iterere over char fra token.type
+        for (token.lexeme) |char| {
+            const binary = asciiToBinary(char);
+            try file.writeAll(&binary);
+        }
     }
 }
