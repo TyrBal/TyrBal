@@ -155,68 +155,13 @@ const Lexer = struct {
         if (std.ascii.isDigit(c)) return self.number();
 
         switch (c) {
-            '(' => return Token{
+            '(', ')', '{', '}', '[', ']', ';', ',' => return Token{
                 .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
-            ')' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '{' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '}' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '[' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            ']' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '=' => return Token{
-                .type = TokenType.operator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '<' => return Token{
-                .type = TokenType.operator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '>' => return Token{
-                .type = TokenType.operator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '+' => return Token{
-                .type = TokenType.operator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '-' => return Token{
-                .type = TokenType.operator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '*' => return Token{
-                .type = TokenType.operator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            '/' => {
-                if (self.match('/')) {
+            '=', '<', '>', '+', '-', '*', '/' => {
+                if (c == '/' and self.match('/')) {
                     while (self.lookAHead() != '\n' and !self.isAtEnd()) {
                         _ = self.advance();
                     }
@@ -232,16 +177,6 @@ const Lexer = struct {
                         .line = self.line,
                     };
                 }
-            },
-            ';' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            },
-            ',' => return Token{
-                .type = TokenType.separator,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
             },
             '"' => return self.string(),
             else => {
@@ -262,6 +197,7 @@ const Lexer = struct {
 };
 
 pub fn main() !void {
+    // test code
     const source_code =
         \\include file_name;
         \\define function_name(argument1, argument2){
