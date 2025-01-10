@@ -87,7 +87,7 @@ To install Tyrbal, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/tyrbal-lang/tyrbal.git
+   git clone https://github.com/TyrBal/TyrBal
    ```
 2. Build the Bifröst Compiler:
    ```bash
