@@ -2,17 +2,17 @@ const std = @import("std");
 
 // define token types
 const TokenType = enum {
-    Include,
-    Define,
-    Function,
-    Identifier,
-    Number,
-    String,
-    Operator,
-    Punctuation,
-    Comment,
-    Keyword,
-    EndOfFile,
+    identifier,
+    keyword,
+    separator,
+    operator,
+    literal,
+    comment,
+    eof,
+
+    pub fn toString(self: TokenType) []const u8 {
+        return @tagName(self);
+    }
 };
 
 const Token = struct {
@@ -32,20 +32,24 @@ const Lexer = struct {
             .source = source,
         };
     }
+
     // checks if the lexer has reached the end of the source code
     fn isAtEnd(self: *Lexer) bool {
         return self.current >= self.source.len;
     }
+
     // moves the current pointer forward by one character and returns the character
     fn advance(self: *Lexer) u8 {
         self.current += 1;
         return self.source[self.current - 1];
     }
+
     // looks at the current character without consuming it
     fn lookAHead(self: *Lexer) u8 {
         if (self.isAtEnd()) return 0;
         return self.source[self.current];
     }
+
     // checks if the current character matches an expected character and consumes it if it does
     fn match(self: *Lexer, expected: u8) bool {
         if (self.isAtEnd()) return false;
@@ -53,6 +57,7 @@ const Lexer = struct {
         self.current += 1;
         return true;
     }
+
     // skips over whitespace characters
     fn skipWhitespace(self: *Lexer) void {
         while (!self.isAtEnd()) {
@@ -70,25 +75,26 @@ const Lexer = struct {
         }
     }
 
-    // scans an identifier
+    // scans an identifier or keyword
     fn identifier(self: *Lexer) Token {
         while (std.ascii.isAlphabetic(self.lookAHead()) or self.lookAHead() == '_') {
             _ = self.advance();
         }
         const text = self.source[self.start..self.current];
         const token_type = blk: {
-            if (std.mem.eql(u8, text, "include")) break :blk TokenType.Include;
-            if (std.mem.eql(u8, text, "define")) break :blk TokenType.Define;
-            if (std.mem.eql(u8, text, "function")) break :blk TokenType.Function;
-            if (std.mem.eql(u8, text, "if") or
+            if (std.mem.eql(u8, text, "include") or
+                std.mem.eql(u8, text, "define") or
+                std.mem.eql(u8, text, "function") or
+                std.mem.eql(u8, text, "if") or
                 std.mem.eql(u8, text, "elseif") or
                 std.mem.eql(u8, text, "else") or
                 std.mem.eql(u8, text, "while") or
-                std.mem.eql(u8, text, "for"))
+                std.mem.eql(u8, text, "for") or
+                std.mem.eql(u8, text, "return"))
             {
-                break :blk TokenType.Keyword;
+                break :blk TokenType.keyword;
             }
-            break :blk TokenType.Identifier;
+            break :blk TokenType.identifier;
         };
         return Token{
             .type = token_type,
@@ -96,13 +102,14 @@ const Lexer = struct {
             .line = self.line,
         };
     }
+
     // scans a numeric literal
     fn number(self: *Lexer) Token {
         while (std.ascii.isDigit(self.lookAHead())) {
             _ = self.advance();
         }
         return Token{
-            .type = TokenType.Number,
+            .type = TokenType.literal,
             .lexeme = self.source[self.start..self.current],
             .line = self.line,
         };
@@ -117,14 +124,14 @@ const Lexer = struct {
         if (self.isAtEnd()) {
             std.debug.print("Unterminated string at line {}\n", .{self.line});
             return Token{
-                .type = TokenType.EndOfFile,
+                .type = TokenType.eof,
                 .lexeme = "",
                 .line = self.line,
             };
         }
-        _ = self.advance(); // Closing "
+        _ = self.advance(); // closing "
         return Token{
-            .type = TokenType.String,
+            .type = TokenType.literal,
             .lexeme = self.source[self.start + 1 .. self.current - 1],
             .line = self.line,
         };
@@ -137,7 +144,7 @@ const Lexer = struct {
 
         if (self.isAtEnd()) {
             return Token{
-                .type = TokenType.EndOfFile,
+                .type = TokenType.eof,
                 .lexeme = "",
                 .line = self.line,
             };
@@ -149,62 +156,62 @@ const Lexer = struct {
 
         switch (c) {
             '(' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             ')' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '{' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '}' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '[' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             ']' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '=' => return Token{
-                .type = TokenType.Operator,
+                .type = TokenType.operator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '<' => return Token{
-                .type = TokenType.Operator,
+                .type = TokenType.operator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '>' => return Token{
-                .type = TokenType.Operator,
+                .type = TokenType.operator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '+' => return Token{
-                .type = TokenType.Operator,
+                .type = TokenType.operator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '-' => return Token{
-                .type = TokenType.Operator,
+                .type = TokenType.operator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             '*' => return Token{
-                .type = TokenType.Operator,
+                .type = TokenType.operator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
@@ -214,25 +221,25 @@ const Lexer = struct {
                         _ = self.advance();
                     }
                     return Token{
-                        .type = TokenType.Comment,
+                        .type = TokenType.comment,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
                 } else {
                     return Token{
-                        .type = TokenType.Operator,
+                        .type = TokenType.operator,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
                 }
             },
             ';' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
             ',' => return Token{
-                .type = TokenType.Punctuation,
+                .type = TokenType.separator,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
@@ -240,25 +247,19 @@ const Lexer = struct {
             else => {
                 std.debug.print("Unexpected character: {c} at line {}\n", .{ c, self.line });
                 return Token{
-                    .type = TokenType.EndOfFile,
+                    .type = TokenType.eof,
                     .lexeme = "",
                     .line = self.line,
                 };
             },
         }
     }
-};
 
-// function to convert ASCII to binary
-fn asciiToBinary(ascii: u8) [8]u8 {
-    var binary: [8]u8 = undefined;
-    var value = ascii;
-    for (0..8) |i| {
-        binary[7 - i] = @as(u8, @truncate(value % 2));
-        value /= 2;
+    fn writeTokenType(token_type: TokenType, writer: anytype) !void {
+        const type_string = token_type.toString();
+        try writer.writeAll(type_string);
     }
-    return binary;
-}
+};
 
 pub fn main() !void {
     const source_code =
@@ -285,16 +286,11 @@ pub fn main() !void {
         .{ .read = true },
     );
     defer file.close();
+    const writer = file.writer();
 
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
+        try Lexer.writeTokenType(token.type, writer);
         std.debug.print("{}\n", .{token});
-
-        // convert each character in token.lexeme to binary and write to file
-        // TODO Endre fra .lexeme til å iterere over char fra token.type
-        for (token.lexeme) |char| {
-            const binary = asciiToBinary(char);
-            try file.writeAll(&binary);
-        }
     }
 }
