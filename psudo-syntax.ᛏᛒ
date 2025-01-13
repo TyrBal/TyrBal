@@ -1,28 +1,21 @@
-include file_name;
-ᛁᚾᚲᛚᚢᛞᛖ file_name;
+include first_saga.tb;
 
-define function_name(argument1, argument2){
-    return argument1 - argument2;
+define subtracting(number1,number2){
+    return number1 - number2 ;
 }
-ᛞᛖᚠᛁᚾᛖ function_name(argument1, argument2){
-    ᚱᛖᛏᚢᚱᚾ argument1 - argument2; 
-} 
 
-variable_name = value;
-pointer_name = *variable_name;
+greeting = "heisann";
+hei_pointer = *greeting;
 
-list_name = [5];
-list_name[0] = value;
+liste = [5];
+liste[0] = 255;
 
-for (i = 1; i>10; i++){}
-ᚠᛟᚱ (ᛁ = 1; ᛁ<10; ᛁ++){} 
-while(){}
-ᚹᚺᛁᛚᛖ(){} 
+for(i = 1; i > 10; i ++){
+    if(liste[i] != 0){
+        subtracting(liste[i],liste[i]);
+    }
+}
 
-if(){}
-ᛁᚠ(){} 
-elseif(){}
-ᛖᛚᛊᛖᛁᚠ(){} 
-else{}
-ᛖᛚᛊᛖ{}
-
+if(subtracting(4,2)>1){
+    hei_pointer += 0xF;
+}
