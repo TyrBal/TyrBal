@@ -9,7 +9,6 @@ const TokenType = enum {
     literal,
     comment,
     eof,
-
     pub fn toString(self: TokenType) []const u8 {
         return @tagName(self);
     }
@@ -194,6 +193,16 @@ const Lexer = struct {
         const type_string = token.type.toString();
         try writer.print("{s}({s})", .{ type_string, token.lexeme });
     }
+    // function to convert ASCII to binary
+    fn asciiToBinary(ascii: u8) [8]u8 {
+        var binary: [8]u8 = undefined;
+        var value = ascii;
+        for (0..8) |i| {
+            binary[7 - i] = @as(u8, @truncate(value % 2));
+            value /= 2;
+            return binary;
+        }
+    }
 };
 
 pub fn main() !void {
@@ -218,7 +227,7 @@ pub fn main() !void {
     var lexer = Lexer.init(source_code);
 
     const file = try std.fs.cwd().createFile(
-        "binary",
+        "tokens",
         .{ .read = true },
     );
     defer file.close();
