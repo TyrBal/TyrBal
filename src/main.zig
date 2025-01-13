@@ -193,16 +193,6 @@ const Lexer = struct {
         const type_string = token.type.toString();
         try writer.print("{s}({s})", .{ type_string, token.lexeme });
     }
-    // function to convert ASCII to binary
-    fn asciiToBinary(ascii: u8) [8]u8 {
-        var binary: [8]u8 = undefined;
-        var value = ascii;
-        for (0..8) |i| {
-            binary[7 - i] = @as(u8, @truncate(value % 2));
-            value /= 2;
-            return binary;
-        }
-    }
 };
 
 pub fn main() !void {
