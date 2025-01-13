@@ -190,9 +190,9 @@ const Lexer = struct {
         }
     }
 
-    fn writeTokenType(token_type: TokenType, writer: anytype) !void {
-        const type_string = token_type.toString();
-        try writer.writeAll(type_string);
+    fn writeToken(token: Token, writer: anytype) !void {
+        const type_string = token.type.toString();
+        try writer.print("{s}({s})", .{ type_string, token.lexeme });
     }
 };
 
@@ -226,7 +226,10 @@ pub fn main() !void {
 
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
-        try Lexer.writeTokenType(token.type, writer);
+        try Lexer.writeToken(token, writer);
+        if (!lexer.isAtEnd()) {
+            try writer.writeAll(" ");
+        }
         std.debug.print("{}\n", .{token});
     }
 }
