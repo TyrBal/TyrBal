@@ -196,29 +196,28 @@ const Lexer = struct {
 };
 
 pub fn main() !void {
-    // test code
-    const source_code =
-        \\include file_name;
-        \\define function_name(argument1, argument2){
-        \\    return argument1 - argument2;
-        \\}
-        \\variable_name = value;
-        \\pointer_name = *variable_name;
-        \\list_name = [5];
-        \\list_name[0] = value;
-        \\for (i = 1; i>10; i++){} 
-        \\while(bolle==true){} 
-        \\if(){}
-        \\elseif(){} 
-        \\else{}
-        \\//comment line
-    ;
+    // get the allocator
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
 
-    var lexer = Lexer.init(source_code);
+    // get the command-line arguments
+    const args = try std.process.argsAlloc(allocator);
+    defer std.process.argsFree(allocator, args);
+
+    // the filename is the second argument
+    const filename = args[1];
+
+    // open the input file and read its contents
+    const input_file = try std.fs.cwd().openFile(filename, .{});
+    defer input_file.close();
+    const source = try input_file.readToEndAlloc(allocator, std.math.maxInt(usize));
+
+    var lexer = Lexer.init(source);
 
     const file = try std.fs.cwd().createFile(
         "tokens",
-        .{ .read = true },
+        .{},
     );
     defer file.close();
     const writer = file.writer();
