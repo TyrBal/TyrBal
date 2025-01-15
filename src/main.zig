@@ -2,13 +2,13 @@ const std = @import("std");
 
 // define token types
 const TokenType = enum {
-    identifier,
-    keyword,
-    separator,
-    operator,
-    literal,
-    comment,
-    eof,
+    i, //identifier
+    k, //keyword
+    s, //separator
+    o, //operator
+    l, //literal
+    c, //comment
+    e, //eof
     pub fn toString(self: TokenType) []const u8 {
         return @tagName(self);
     }
@@ -121,7 +121,6 @@ const Lexer = struct {
             _ = self.advance();
         }
         if (self.isAtEnd()) {
-            std.debug.print("Unterminated string at line {}\n", .{self.line});
             return Token{
                 .type = TokenType.eof,
                 .lexeme = "",
@@ -228,6 +227,5 @@ pub fn main() !void {
         if (!lexer.isAtEnd()) {
             try writer.writeAll(" ");
         }
-        std.debug.print("{}\n", .{token});
     }
 }
