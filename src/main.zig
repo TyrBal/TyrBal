@@ -1,5 +1,7 @@
 const std = @import("std");
 
+// TODO operators combine into one token if after another eg:  '+=', '>=' or '!='
+
 // define token types
 const TokenType = enum {
     i, //identifier
@@ -158,7 +160,7 @@ const Lexer = struct {
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
-            '=', '<', '>', '+', '-', '*', '/' => {
+            '=', '<', '>', '+', '-', '*', '/', '!' => {
                 if (c == '/' and self.match('/')) {
                     while (self.lookAHead() != '\n' and !self.isAtEnd()) {
                         _ = self.advance();
