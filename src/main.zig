@@ -227,7 +227,7 @@ pub fn main() !void {
         const token = lexer.scanToken();
         try Lexer.writeToken(token, writer);
         if (!lexer.isAtEnd()) {
-            try writer.writeAll(" ");
+            try writer.writeAll("  ");
         }
     }
 }
