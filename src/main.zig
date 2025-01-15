@@ -76,7 +76,7 @@ const Lexer = struct {
 
     // scans an identifier or keyword
     fn identifier(self: *Lexer) Token {
-        while (std.ascii.isAlphanumeric(self.lookAHead()) or self.lookAHead() == '_') {
+        while (std.ascii.isAlphanumeric(self.lookAHead()) or self.lookAHead() == '_' or self.lookAHead() == '.') {
             _ = self.advance();
         }
         const text = self.source[self.start..self.current];
