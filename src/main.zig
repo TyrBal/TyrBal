@@ -91,9 +91,9 @@ const Lexer = struct {
                 std.mem.eql(u8, text, "for") or
                 std.mem.eql(u8, text, "return"))
             {
-                break :blk TokenType.keyword;
+                break :blk TokenType.k;
             }
-            break :blk TokenType.identifier;
+            break :blk TokenType.i;
         };
         return Token{
             .type = token_type,
@@ -108,7 +108,7 @@ const Lexer = struct {
             _ = self.advance();
         }
         return Token{
-            .type = TokenType.literal,
+            .type = TokenType.l,
             .lexeme = self.source[self.start..self.current],
             .line = self.line,
         };
@@ -122,14 +122,14 @@ const Lexer = struct {
         }
         if (self.isAtEnd()) {
             return Token{
-                .type = TokenType.eof,
+                .type = TokenType.e,
                 .lexeme = "",
                 .line = self.line,
             };
         }
         _ = self.advance(); // closing "
         return Token{
-            .type = TokenType.literal,
+            .type = TokenType.l,
             .lexeme = self.source[self.start + 1 .. self.current - 1],
             .line = self.line,
         };
@@ -142,7 +142,7 @@ const Lexer = struct {
 
         if (self.isAtEnd()) {
             return Token{
-                .type = TokenType.eof,
+                .type = TokenType.e,
                 .lexeme = "",
                 .line = self.line,
             };
@@ -154,7 +154,7 @@ const Lexer = struct {
 
         switch (c) {
             '(', ')', '{', '}', '[', ']', ';', ',' => return Token{
-                .type = TokenType.separator,
+                .type = TokenType.s,
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
@@ -164,13 +164,13 @@ const Lexer = struct {
                         _ = self.advance();
                     }
                     return Token{
-                        .type = TokenType.comment,
+                        .type = TokenType.c,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
                 } else {
                     return Token{
-                        .type = TokenType.operator,
+                        .type = TokenType.o,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
@@ -180,7 +180,7 @@ const Lexer = struct {
             else => {
                 std.debug.print("Unexpected character: {c} at line {}\n", .{ c, self.line });
                 return Token{
-                    .type = TokenType.eof,
+                    .type = TokenType.e,
                     .lexeme = "",
                     .line = self.line,
                 };
