@@ -1,7 +1,5 @@
 const std = @import("std");
 
-// TODO operators combine into one token if after another eg:  '+=', '>=' or '!='
-
 // define token types
 const TokenType = enum {
     i, //identifier
