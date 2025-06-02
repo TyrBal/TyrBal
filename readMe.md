@@ -1,5 +1,5 @@
 # Tyrbal: A Futuristic Hybrid Programming Language 🚀
-
+# readme is wip and is just yap :^)
 Welcome to **Tyrbal**, a cutting-edge programming language designed to bridge the gap between functional elegance and systems-level performance. Named after its creators, **Tyron** and **Baldur**, Tyrbal combines the best of both worlds, offering a seamless blend of paradigms for modern, multi-domain development. Whether you're building low-level hardware applications or scalable distributed systems, Tyrbal has you covered.
 
 ---
