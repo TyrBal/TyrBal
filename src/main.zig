@@ -160,8 +160,10 @@ const Lexer = struct {
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
+
             '=', '<', '>', '+', '-', '*', '/', '!' => {
                 if (c == '/' and self.match('/')) {
+                    // Handle line comment
                     while (self.lookAHead() != '\n' and !self.isAtEnd()) {
                         _ = self.advance();
                     }
@@ -170,13 +172,23 @@ const Lexer = struct {
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
-                } else {
+                }
+
+                // Multi-character operator detection
+                if (self.match('=')) {
                     return Token{
                         .type = TokenType.o,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
                 }
+
+                // Single-character operator
+                return Token{
+                    .type = TokenType.o,
+                    .lexeme = self.source[self.start..self.current],
+                    .line = self.line,
+                };
             },
             '"' => return self.string(),
             else => {
