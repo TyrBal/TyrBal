@@ -262,7 +262,7 @@ test "identifier with dots" {
 }
 
 test "hex literal recognition" {
-    const source = "0xF 0x123 xF"; // Note: your lexer treats 0xF as separate tokens
+    const source = "0xF 0x123 xF";
     var lexer = Lexer.init(source);
 
     const token1 = lexer.scanToken();
