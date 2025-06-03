@@ -1,9 +1,7 @@
 const std = @import("std");
 
-// TODO operators combine into one token if after another eg:  '+=', '>=' or '!='
-
 // define token types
-const TokenType = enum {
+pub const TokenType = enum {
     i, //identifier
     k, //keyword
     s, //separator
@@ -16,43 +14,43 @@ const TokenType = enum {
     }
 };
 
-const Token = struct {
+pub const Token = struct {
     type: TokenType,
     lexeme: []const u8,
     line: usize,
 };
 
-const Lexer = struct {
+pub const Lexer = struct {
     source: []const u8, // entire source code as a string
     start: usize = 0, // starting index of the current token in the source code
     current: usize = 0, // current position in the source code being scanned
     line: usize = 1, // current line number in the source code
 
-    fn init(source: []const u8) Lexer {
+    pub fn init(source: []const u8) Lexer {
         return Lexer{
             .source = source,
         };
     }
 
     // checks if the lexer has reached the end of the source code
-    fn isAtEnd(self: *Lexer) bool {
+    pub fn isAtEnd(self: *Lexer) bool {
         return self.current >= self.source.len;
     }
 
     // moves the current pointer forward by one character and returns the character
-    fn advance(self: *Lexer) u8 {
+    pub fn advance(self: *Lexer) u8 {
         self.current += 1;
         return self.source[self.current - 1];
     }
 
     // looks at the current character without consuming it
-    fn lookAHead(self: *Lexer) u8 {
+    pub fn lookAHead(self: *Lexer) u8 {
         if (self.isAtEnd()) return 0;
         return self.source[self.current];
     }
 
     // checks if the current character matches an expected character and consumes it if it does
-    fn match(self: *Lexer, expected: u8) bool {
+    pub fn match(self: *Lexer, expected: u8) bool {
         if (self.isAtEnd()) return false;
         if (self.source[self.current] != expected) return false;
         self.current += 1;
@@ -60,7 +58,7 @@ const Lexer = struct {
     }
 
     // skips over whitespace characters
-    fn skipWhitespace(self: *Lexer) void {
+    pub fn skipWhitespace(self: *Lexer) void {
         while (!self.isAtEnd()) {
             const c = self.lookAHead();
             switch (c) {
@@ -138,7 +136,7 @@ const Lexer = struct {
     }
 
     // scans the next token in the source code
-    fn scanToken(self: *Lexer) Token {
+    pub fn scanToken(self: *Lexer) Token {
         self.skipWhitespace();
         self.start = self.current;
 
@@ -151,7 +149,7 @@ const Lexer = struct {
         }
 
         const c = self.advance();
-        if (std.ascii.isAlphabetic(c)) return self.identifier();
+        if (std.ascii.isAlphabetic(c) or c == '_') return self.identifier();
         if (std.ascii.isDigit(c)) return self.number();
 
         switch (c) {
@@ -160,8 +158,10 @@ const Lexer = struct {
                 .lexeme = self.source[self.start..self.current],
                 .line = self.line,
             },
+
             '=', '<', '>', '+', '-', '*', '/', '!' => {
                 if (c == '/' and self.match('/')) {
+                    // Handle line comment
                     while (self.lookAHead() != '\n' and !self.isAtEnd()) {
                         _ = self.advance();
                     }
@@ -170,13 +170,23 @@ const Lexer = struct {
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
-                } else {
+                }
+
+                // Multi-character operator detection
+                if (self.match('=')) {
                     return Token{
                         .type = TokenType.o,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
                 }
+
+                // Single-character operator
+                return Token{
+                    .type = TokenType.o,
+                    .lexeme = self.source[self.start..self.current],
+                    .line = self.line,
+                };
             },
             '"' => return self.string(),
             else => {
