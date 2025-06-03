@@ -101,27 +101,6 @@ pub const Lexer = struct {
             .line = self.line,
         };
     }
-    fn hex(self: *Lexer) Token {
-        const start_pos = self.current;
-
-        while (std.ascii.isHex(self.lookAHead())) {
-            _ = self.advance();
-        }
-        if (self.current == start_pos) {
-            std.debug.print("Invalid hex literal: missing digits after '0x' at line {}\n", .{self.line});
-            return Token{
-                .type = TokenType.e,
-                .lexeme = self.source[self.start..self.current],
-                .line = self.line,
-            };
-        }
-
-        return Token{
-            .type = TokenType.l,
-            .lexeme = self.source[self.start..self.current],
-            .line = self.line,
-        };
-    }
 
     // scans a numeric literal
     fn number(self: *Lexer) Token {
@@ -172,18 +151,7 @@ pub const Lexer = struct {
         const c = self.advance();
 
         if (std.ascii.isAlphabetic(c) or c == '_') return self.identifier();
-
-        // handle numbers
-        if (std.ascii.isDigit(c)) {
-            if (c == '0' and !self.isAtEnd() and self.lookAHead() == 'x') {
-                _ = self.advance();
-                return self.hex();
-            }
-
-            // back up one step
-            self.current -= 1;
-            return self.number();
-        }
+        if (std.ascii.isDigit(c)) return self.number();
 
         switch (c) {
             '(', ')', '{', '}', '[', ']', ';', ',' => return Token{
@@ -200,14 +168,6 @@ pub const Lexer = struct {
                     }
                     return Token{
                         .type = TokenType.c,
-                        .lexeme = self.source[self.start..self.current],
-                        .line = self.line,
-                    };
-                }
-
-                if (self.match('=') or self.match('+') or self.match('-')) {
-                    return Token{
-                        .type = TokenType.o,
                         .lexeme = self.source[self.start..self.current],
                         .line = self.line,
                     };
@@ -267,7 +227,7 @@ pub fn main() !void {
 
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
-        std.debug.print("{s}", .{token.lexeme});
+        //std.debug.print("{s}", .{token.lexeme});
         try Lexer.writeToken(token, writer);
         if (!lexer.isAtEnd()) {
             try writer.writeAll("  ");

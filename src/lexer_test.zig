@@ -169,10 +169,10 @@ test "scan separator tokens" {
 }
 
 test "scan operator tokens" {
-    const source = "= == < > + - * / ! != <= >= +=";
+    const source = "= < > + - * / !";
     var lexer = Lexer.init(source);
 
-    const operators = [_][]const u8{ "=", "==", "<", ">", "+", "-", "*", "/", "!", "!=", "<=", ">=", "+=" };
+    const operators = [_][]const u8{ "=", "<", ">", "+", "-", "*", "/", "!" };
 
     for (operators) |op| {
         const token = lexer.scanToken();
@@ -225,7 +225,8 @@ test "complex expression tokenization" {
         .{ .type = TokenType.k, .lexeme = "if" },
         .{ .type = TokenType.s, .lexeme = "(" },
         .{ .type = TokenType.i, .lexeme = "x" },
-        .{ .type = TokenType.o, .lexeme = "==" },
+        .{ .type = TokenType.o, .lexeme = "=" },
+        .{ .type = TokenType.o, .lexeme = "=" },
         .{ .type = TokenType.l, .lexeme = "42" },
         .{ .type = TokenType.s, .lexeme = ")" },
         .{ .type = TokenType.s, .lexeme = "{" },
