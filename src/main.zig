@@ -102,9 +102,20 @@ pub const Lexer = struct {
         };
     }
     fn hex(self: *Lexer) Token {
+        const start_pos = self.current;
+
         while (std.ascii.isHex(self.lookAHead())) {
             _ = self.advance();
         }
+        if (self.current == start_pos) {
+            std.debug.print("Invalid hex literal: missing digits after '0x' at line {}\n", .{self.line});
+            return Token{
+                .type = TokenType.e,
+                .lexeme = self.source[self.start..self.current],
+                .line = self.line,
+            };
+        }
+
         return Token{
             .type = TokenType.l,
             .lexeme = self.source[self.start..self.current],
@@ -159,9 +170,20 @@ pub const Lexer = struct {
         }
 
         const c = self.advance();
+
         if (std.ascii.isAlphabetic(c) or c == '_') return self.identifier();
-        if (std.ascii.isHex(c)) return self.hex();
-        if (std.ascii.isDigit(c)) return self.number();
+
+        // handle numbers
+        if (std.ascii.isDigit(c)) {
+            if (c == '0' and !self.isAtEnd() and self.lookAHead() == 'x') {
+                _ = self.advance();
+                return self.hex();
+            }
+
+            // back up one step
+            self.current -= 1;
+            return self.number();
+        }
 
         switch (c) {
             '(', ')', '{', '}', '[', ']', ';', ',' => return Token{
