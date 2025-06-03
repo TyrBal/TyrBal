@@ -172,15 +172,6 @@ pub const Lexer = struct {
                     };
                 }
 
-                // Multi-character operator detection
-                if (self.match('=')) {
-                    return Token{
-                        .type = TokenType.o,
-                        .lexeme = self.source[self.start..self.current],
-                        .line = self.line,
-                    };
-                }
-
                 // Single-character operator
                 return Token{
                     .type = TokenType.o,
