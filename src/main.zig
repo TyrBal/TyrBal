@@ -101,6 +101,16 @@ pub const Lexer = struct {
             .line = self.line,
         };
     }
+    fn hex(self: *Lexer) Token {
+        while (std.ascii.isHex(self.lookAHead())) {
+            _ = self.advance();
+        }
+        return Token{
+            .type = TokenType.l,
+            .lexeme = self.source[self.start..self.current],
+            .line = self.line,
+        };
+    }
 
     // scans a numeric literal
     fn number(self: *Lexer) Token {
@@ -150,6 +160,7 @@ pub const Lexer = struct {
 
         const c = self.advance();
         if (std.ascii.isAlphabetic(c) or c == '_') return self.identifier();
+        if (std.ascii.isHex(c)) return self.hex();
         if (std.ascii.isDigit(c)) return self.number();
 
         switch (c) {
@@ -161,7 +172,7 @@ pub const Lexer = struct {
 
             '=', '<', '>', '+', '-', '*', '/', '!' => {
                 if (c == '/' and self.match('/')) {
-                    // Handle line comment
+                    // handle line comment
                     while (self.lookAHead() != '\n' and !self.isAtEnd()) {
                         _ = self.advance();
                     }
@@ -172,7 +183,15 @@ pub const Lexer = struct {
                     };
                 }
 
-                // Single-character operator
+                if (self.match('=') or self.match('+') or self.match('-')) {
+                    return Token{
+                        .type = TokenType.o,
+                        .lexeme = self.source[self.start..self.current],
+                        .line = self.line,
+                    };
+                }
+
+                // single-character operator
                 return Token{
                     .type = TokenType.o,
                     .lexeme = self.source[self.start..self.current],
@@ -226,6 +245,7 @@ pub fn main() !void {
 
     while (!lexer.isAtEnd()) {
         const token = lexer.scanToken();
+        std.debug.print("{s}", .{token.lexeme});
         try Lexer.writeToken(token, writer);
         if (!lexer.isAtEnd()) {
             try writer.writeAll("  ");
