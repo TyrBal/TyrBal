@@ -1,9 +1,14 @@
 const std = @import("std");
 
+<<<<<<< Updated upstream
 // TODO operators combine into one token if after another eg:  '+=', '>=' or '!='
 
 // define token types
 const TokenType = enum {
+=======
+// token types
+pub const TokenType = enum {
+>>>>>>> Stashed changes
     i, //identifier
     k, //keyword
     s, //separator
@@ -24,9 +29,9 @@ const Token = struct {
 
 const Lexer = struct {
     source: []const u8, // entire source code as a string
-    start: usize = 0, // starting index of the current token in the source code
+    start: usize = 0, // starting index of the current token
     current: usize = 0, // current position in the source code being scanned
-    line: usize = 1, // current line number in the source code
+    line: usize = 1, // current line number
 
     fn init(source: []const u8) Lexer {
         return Lexer{
