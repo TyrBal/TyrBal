@@ -78,7 +78,7 @@ This project implements **only the first stage** of a compiler - lexical analysi
 3. **Verify Installation**:
    ```bash
    zig version
-   # Should output something like: 0.11.0 or newer
+   # Should output something like: 0.14.0 or newer
    ```
 
 ### Option 2: Package Manager Installation
@@ -159,6 +159,11 @@ cat tokens
 2. It identifies tokens (keywords, identifiers, operators, etc.)
 3. It writes the tokens to a file called `tokens` in the current directory
 4. **That's it** - no compilation, no executable generation, just tokenization
+
+## IMPORTANT
+
+    ### i am using zig version 0.14.0-dev.2371+c013f45ad
+    ### could be have breaking changes
 
 ## Input/Output Example
 
