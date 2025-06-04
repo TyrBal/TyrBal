@@ -1,5 +1,5 @@
 .zig-cache/
-tokens
+tokens.*
 main
 main.o
 zig-out/
