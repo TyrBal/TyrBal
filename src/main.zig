@@ -1,5 +1,6 @@
 const std = @import("std");
 
+// Token categories for lexical analysis
 // define token types
 pub const TokenType = enum {
     i, //identifier
@@ -9,46 +10,55 @@ pub const TokenType = enum {
     l, //literal
     c, //comment
     e, //eof
+
+    // Convert enum to string for output
     pub fn toString(self: TokenType) []const u8 {
         return @tagName(self);
     }
 };
 
+// Token with type, content, and location info
 pub const Token = struct {
     type: TokenType,
     lexeme: []const u8,
     line: usize,
 };
 
+// Lexical analyzer that converts source code into tokens
 pub const Lexer = struct {
     source: []const u8, // entire source code as a string
     start: usize = 0, // starting index of the current token
     current: usize = 0, // current position in the source code being scanned
     line: usize = 1, // current line number
 
+    // Initialize lexer with source code
     pub fn init(source: []const u8) Lexer {
         return Lexer{
             .source = source,
         };
     }
 
+    // Check if at end of source
     // checks if the lexer has reached the end of the source code
     pub fn isAtEnd(self: *Lexer) bool {
         return self.current >= self.source.len;
     }
 
+    // Consume and return current character
     // moves the current pointer forward by one character and returns the character
     pub fn advance(self: *Lexer) u8 {
         self.current += 1;
         return self.source[self.current - 1];
     }
 
+    // Peek at current character without consuming
     // looks at the current character without consuming it
     pub fn lookAHead(self: *Lexer) u8 {
         if (self.isAtEnd()) return 0;
         return self.source[self.current];
     }
 
+    // Consume character if it matches expected value
     // checks if the current character matches an expected character and consumes it if it does
     pub fn match(self: *Lexer, expected: u8) bool {
         if (self.isAtEnd()) return false;
@@ -57,6 +67,7 @@ pub const Lexer = struct {
         return true;
     }
 
+    // Skip whitespace and update line counter
     // skips over whitespace characters
     pub fn skipWhitespace(self: *Lexer) void {
         while (!self.isAtEnd()) {
@@ -74,6 +85,7 @@ pub const Lexer = struct {
         }
     }
 
+    // Scan identifier and check if it's a keyword
     // scans an identifier or keyword
     fn identifier(self: *Lexer) Token {
         while (std.ascii.isAlphanumeric(self.lookAHead()) or self.lookAHead() == '_' or self.lookAHead() == '.') {
@@ -101,6 +113,8 @@ pub const Lexer = struct {
             .line = self.line,
         };
     }
+
+    // Scan hexadecimal number (0x prefix)
     fn hex(self: *Lexer) Token {
         const start_pos = self.current;
 
@@ -122,6 +136,8 @@ pub const Lexer = struct {
             .line = self.line,
         };
     }
+
+    // Scan decimal number
     // scans a numeric literal
     fn number(self: *Lexer) Token {
         while (std.ascii.isDigit(self.lookAHead())) {
@@ -134,6 +150,7 @@ pub const Lexer = struct {
         };
     }
 
+    // Scan string literal (between quotes)
     // scans a string literal
     fn string(self: *Lexer) Token {
         while (self.lookAHead() != '"' and !self.isAtEnd()) {
@@ -155,6 +172,7 @@ pub const Lexer = struct {
         };
     }
 
+    // Main tokenization function - returns next token from source
     // scans the next token in the source code
     pub fn scanToken(self: *Lexer) Token {
         self.skipWhitespace();
@@ -224,12 +242,14 @@ pub const Lexer = struct {
         }
     }
 
+    // Write token to output stream in formatted form
     fn writeToken(token: Token, writer: anytype) !void {
         const type_string = token.type.toString();
         try writer.print("{s}({s})", .{ type_string, token.lexeme });
     }
 };
 
+// Main program - tokenize file and write results
 pub fn main() !void {
     // get the allocator
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
