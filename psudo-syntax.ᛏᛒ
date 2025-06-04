@@ -10,6 +10,8 @@ hei_pointer = *greeting;
 liste = [5];
 liste[0] = 255;
 
+variabel = 0x59102baf
+
 for(i = 1; i > 10; i ++){
     if(liste[i] != 0){
         subtracting(liste[i],liste[i]);

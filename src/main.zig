@@ -101,7 +101,27 @@ pub const Lexer = struct {
             .line = self.line,
         };
     }
+    fn hex(self: *Lexer) Token {
+        const start_pos = self.current;
 
+        while (std.ascii.isHex(self.lookAHead())) {
+            _ = self.advance();
+        }
+        if (self.current == start_pos) {
+            std.debug.print("missing digits after '0x' at line {}\n", .{self.line});
+            return Token{
+                .type = TokenType.e,
+                .lexeme = self.source[self.start..self.current],
+                .line = self.line,
+            };
+        }
+
+        return Token{
+            .type = TokenType.l,
+            .lexeme = self.source[self.start..self.current],
+            .line = self.line,
+        };
+    }
     // scans a numeric literal
     fn number(self: *Lexer) Token {
         while (std.ascii.isDigit(self.lookAHead())) {
@@ -150,8 +170,20 @@ pub const Lexer = struct {
 
         const c = self.advance();
 
+        // characters or underscore
         if (std.ascii.isAlphabetic(c) or c == '_') return self.identifier();
-        if (std.ascii.isDigit(c)) return self.number();
+
+        // numbers
+        if (std.ascii.isDigit(c)) {
+            if (c == '0' and !self.isAtEnd() and self.lookAHead() == 'x') {
+                _ = self.advance();
+                return self.hex();
+            }
+
+            // back up one step
+            self.current -= 1;
+            return self.number();
+        }
 
         switch (c) {
             '(', ')', '{', '}', '[', ']', ';', ',' => return Token{
@@ -182,7 +214,7 @@ pub const Lexer = struct {
             },
             '"' => return self.string(),
             else => {
-                std.debug.print("Unexpected character: {c} at line {}\n", .{ c, self.line });
+                std.debug.print("Unexpected character: {c} at line {}, at char {}\n", .{ c, self.line, self.start });
                 return Token{
                     .type = TokenType.e,
                     .lexeme = "",

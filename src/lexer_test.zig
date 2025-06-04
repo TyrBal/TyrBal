@@ -262,17 +262,30 @@ test "identifier with dots" {
     try testing.expectEqualStrings("module.function", token2.lexeme);
 }
 
+test "identifier with underscore" {
+    const source = "_variable_name_ ___";
+    var lexer = Lexer.init(source);
+
+    const token1 = lexer.scanToken();
+    try testing.expectEqual(TokenType.i, token1.type);
+    try testing.expectEqualStrings("_variable_name_", token1.lexeme);
+
+    const token2 = lexer.scanToken();
+    try testing.expectEqual(TokenType.i, token2.type);
+    try testing.expectEqualStrings("___", token2.lexeme);
+}
+
 test "hex literal recognition" {
-    const source = "0xF 0x123 xF";
+    const source = "0xF 0x123";
     var lexer = Lexer.init(source);
 
     const token1 = lexer.scanToken();
     try testing.expectEqual(TokenType.l, token1.type);
-    try testing.expectEqualStrings("0", token1.lexeme);
+    try testing.expectEqualStrings("0xF", token1.lexeme);
 
     const token2 = lexer.scanToken();
-    try testing.expectEqual(TokenType.i, token2.type);
-    try testing.expectEqualStrings("xF", token2.lexeme);
+    try testing.expectEqual(TokenType.l, token2.type);
+    try testing.expectEqualStrings("0x123", token2.lexeme);
 }
 
 test "full pseudo syntax sample" {
