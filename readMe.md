@@ -1,124 +1,258 @@
-# Tyrbal: A Futuristic Hybrid Programming Language 🚀
-# readme is wip and is just yap :^)
-Welcome to **Tyrbal**, a cutting-edge programming language designed to bridge the gap between functional elegance and systems-level performance. Named after its creators, **Tyron** and **Baldur**, Tyrbal combines the best of both worlds, offering a seamless blend of paradigms for modern, multi-domain development. Whether you're building low-level hardware applications or scalable distributed systems, Tyrbal has you covered.
+# Lexical Analyzer for Custom Language
 
----
+A lexical analyzer (tokenizer) written in Zig that processes source code and breaks it down into tokens for further compilation stages.
 
-## 🌟 Key Features
+## What This Project Actually Does
 
-### 1. **Dynamic Paradigm Switching**
+**THIS IS ONLY A LEXER - NOT A COMPLETE COMPILER**
 
-Tyrbal allows developers to switch between **functional** and **imperative** programming styles effortlessly. Define modules in a pure, immutable functional style or a stateful, mutable imperative style—Tyrbal optimizes across paradigms during compilation.
+This project implements **only the first stage** of a compiler - lexical analysis (tokenization). It:
 
-```tyrbal
-// Functional module
-module Calc [functional]
-  sum = (a, b) => a + b
-  factorial = n => n == 0 ? 1 : n * factorial(n - 1)
-end
+- Reads source code from a file
+- Breaks it down into tokens (identifiers, keywords, operators, literals, etc.)
+- Outputs the tokens to a file for inspection or further processing
+- Provides a foundation for building a complete compiler
 
-// Imperative module
-module Sort [imperative]
-  function bubbleSort(arr):
-    for i in 0...arr.length - 1:
-      for j in 0...(arr.length - i - 1):
-        if arr[j] > arr[j + 1]:
-          swap(arr[j], arr[j + 1])
-end
-```
+**Current Status**:
 
----
+- ✅ **Lexical Analysis Complete** - Can tokenize source code
+- ❌ **Parser Not Implemented** - Cannot build syntax trees
+- ❌ **Semantic Analysis Not Implemented** - No type checking
+- ❌ **Code Generation Not Implemented** - Cannot produce executable code
 
-### 2. **Runic Syntax**
+**This means**: You can tokenize source code, but you cannot compile it into working programs yet.
 
-For the hardcore enthusiasts, Tyrbal offers a **runic syntax** inspired by Norse runes. Write code in a standard human-readable format or use symbolic runes for compact, cryptic scripts. Perfect for fun, security, or stylistic flair!
+## Features
 
-```tyrbal
-// In runic mode
-ᚦ x, y => x + y; // Equivalent to x, y => x + y
-```
+### Token Types Supported
 
----
+- **Identifiers** (`i`): Variable names, function names (e.g., `variable_name`, `first_saga.tb`)
+- **Keywords** (`k`): Language keywords (`include`, `define`, `function`, `if`, `else`, `while`, `for`, `return`)
+- **Separators** (`s`): Punctuation (`(`, `)`, `{`, `}`, `[`, `]`, `;`, `,`)
+- **Operators** (`o`): Arithmetic and comparison (`+`, `-`, `*`, `/`, `=`, `<`, `>`, `!`)
+- **Literals** (`l`): Numbers and strings (`123`, `"hello world"`)
+- **Comments** (`c`): Line comments starting with `//`
+- **EOF** (`e`): End of file marker
 
-### 3. **The Bifröst Compiler**
+### Language Features Recognized
 
-Named after the mythical bridge between realms, the **Bifröst Compiler** transpiles Tyrbal code into multiple target languages, including **C**, **Rust**, **Python**, and **WebAssembly**. Build applications that work seamlessly across ecosystems.
+- Function definitions with `define` keyword
+- Control flow structures (`if`, `for`, `while`)
+- Variable assignments and pointer operations
+- Array indexing and literals
+- String literals with proper quote handling
+- Numeric literals
+- File inclusion with `include` keyword
 
----
+## Prerequisites
 
-### 4. **Threading and Concurrency as First-Class Concepts**
+### Required
 
-Tyrbal embraces the structured chaos of Viking raids with **Baldur Threads** (synchronized threads) and **Tyron Streams** (asynchronous streams). These are natively integrated into the language syntax.
+- **Zig Compiler**: Version 0.11.0 or newer
+  - Download from: https://ziglang.org/download/
+  - Verify installation: `zig version`
 
-```tyrbal
-thread do:
-  print("This runs in parallel!")
-end
+### Optional
 
-stream myStream => fetchData().filter(x => x > 10)
-```
+- A text editor or IDE with Zig support
+- Git (if cloning the repository)
 
----
+## Installation
 
-### 5. **Self-Healing Code**
+### Option 1: Install Zig (Recommended)
 
-Inspired by the resilience of Norse gods, Tyrbal introduces a **resilience layer** that auto-recovers from runtime errors. Whether it's an out-of-memory situation or a crash in an isolated thread, Tyrbal rolls back to a checkpoint or switches to a fallback path.
+1. **Download Zig**:
 
----
+   - Go to https://ziglang.org/download/
+   - Download the appropriate version for your OS
+   - Extract the archive to a directory (e.g., `/usr/local/zig` or `C:\zig`)
 
-### 6. **Embedded Storytelling**
+2. **Add to PATH**:
 
-Tyrbal encourages developers to write code that tells a story. Use metadata annotations to embed comments, flow explanations, or debugging logs into a **narrative layer**. Perfect for team collaboration and project history.
+   - **Linux/macOS**: Add to your shell profile (`.bashrc`, `.zshrc`):
+     ```bash
+     export PATH=$PATH:/path/to/zig
+     ```
+   - **Windows**: Add the Zig directory to your system PATH environment variable
 
-```tyrbal
-@story("This algorithm was inspired by a Viking ship's design.")
-module VikingSort
-  ...
-end
-```
-
----
-
-## 🛠️ Getting Started
-
-### Installation
-
-To install Tyrbal, follow these steps:
-
-1. Clone the repository:
+3. **Verify Installation**:
    ```bash
-   git clone https://github.com/TyrBal/TyrBal
+   zig version
+   # Should output something like: 0.11.0 or newer
    ```
-2. Build the Bifröst Compiler:
+
+### Option 2: Package Manager Installation
+
+- **macOS (Homebrew)**: `brew install zig`
+- **Arch Linux**: `pacman -S zig`
+- **Ubuntu/Debian**: Check https://ziglang.org/download/ for latest packages
+
+## Building and Running
+
+### Step-by-Step Build Process
+
+1. **Clone or download this project**:
+
    ```bash
-   cd tyrbal
-   make build
+   git clone <repository-url>
+   cd <project-directory>
    ```
-3. Start coding in Tyrbal!
 
----
+2. **Build the lexer**:
 
-## 📚 Documentation
+   ```bash
+   zig build
+   ```
 
-- [Language Reference](https://tyrbal-lang.org/docs)
-- [Tutorials](https://tyrbal-lang.org/tutorials)
-- [API Documentation](https://tyrbal-lang.org/api)
+   This creates the executable in `zig-out/bin/`
 
----
+3. **Run the lexer on a source file**:
 
-## 🚀 Why Tyrbal?
+   ```bash
+   # Using zig build run (recommended)
+   zig build run -- psudo-syntax.ᛏᛒ
 
-- **Flexibility**: Switch paradigms effortlessly.
-- **Performance**: Systems-level control with functional elegance.
-- **Cross-Platform**: Compile to multiple languages with the Bifröst Compiler.
-- **Resilience**: Self-healing code for robust applications.
-- **Storytelling**: Embed narratives into your code for better collaboration.
+   # Or run the executable directly
+   ./zig-out/bin/compiler psudo-syntax.ᛏᛒ
+   ```
 
----
+4. **Check the output**:
+   ```bash
+   cat tokens
+   # Shows the tokenized output
+   ```
 
-## 🌍 Community
+### Build Commands Reference
 
-Join the Tyrbal community and contribute to the future of programming!
+```bash
+# Clean build
+zig build
+
+# Build and run with file argument
+zig build run -- <source_file>
+
+# Run all tests
+zig build test
+
+# Clean build artifacts
+rm -rf zig-cache zig-out
+```
+
+### Example Usage
+
+```bash
+# Tokenize the included sample file
+zig build run -- psudo-syntax.ᛏᛒ
+
+# This creates a 'tokens' file with the tokenized output
+cat tokens
+
+# Try with your own source file
+echo 'define test() { return 42; }' > my_code.tb
+zig build run -- my_code.tb
+cat tokens
+```
+
+### What Happens When You Run It
+
+1. The lexer reads your source file character by character
+2. It identifies tokens (keywords, identifiers, operators, etc.)
+3. It writes the tokens to a file called `tokens` in the current directory
+4. **That's it** - no compilation, no executable generation, just tokenization
+
+## Input/Output Example
+
+**Input** (`psudo-syntax.ᛏᛒ`):
+
+```
+define subtracting(number1,number2){
+    return number1 - number2 ;
+}
+
+greeting = "heisann";
+```
+
+**Output** (`tokens` file):
+
+```
+k(define)  i(subtracting)  s(()  i(number1)  s(,)  i(number2)  s())  s({)  k(return)  i(number1)  o(-)  i(number2)  s(;)  s(})  i(greeting)  o(=)  l(heisann)  s(;)
+```
+
+## Project Structure
+
+```
+├── src/
+│   ├── main.zig           # Main lexer implementation
+│   └── lexer_test.zig     # Comprehensive test suite
+├── build.zig              # Zig build configuration
+├── build.zig.zon          # Package configuration
+├── psudo-syntax.ᛏᛒ        # Sample source code
+├── tokens                 # Generated token output
+└── parsing.c              # Experimental C parser (separate)
+```
+
+## Current Limitations
+
+**IMPORTANT: This is only a lexer, not a compiler**
+
+- **No parser**: Only tokenizes, doesn't build an Abstract Syntax Tree (AST)
+- **No semantic analysis**: Doesn't check for type errors, undefined variables, or logic errors
+- **No code generation**: Cannot produce executable code or bytecode
+- **No preprocessing**: File inclusion (`include` statements) are recognized but not processed
+- **No optimization**: No code improvement passes
+- **Limited error handling**: Basic error reporting for malformed tokens only
+
+**What this means**: You can see how your code breaks down into tokens, but you cannot run or execute the code.
+
+## Known Issues
+
+1. **Multi-character operators**: `++`, `==`, `!=` are tokenized as separate single-character operators
+2. **Block comments**: Only line comments (`//`) are supported, not block comments (`/* */`)
+
+## Testing
+
+The project includes a comprehensive test suite covering:
+
+- Individual token type recognition
+- Complex expression tokenization
+- Edge cases (unterminated strings, EOF handling)
+- Line number tracking
+- Whitespace handling
+
+Run tests with:
+
+```bash
+zig build test
+```
+
+## Future Development
+
+This lexer serves as the foundation for a complete compiler. Next steps would include:
+
+1. **Parser**: Build an Abstract Syntax Tree (AST) from tokens
+2. **Semantic Analyzer**: Type checking and symbol table management
+3. **Code Generator**: Produce target machine code or bytecode
+4. **Optimizer**: Improve generated code performance
+
+## Contributing
+
+The codebase is well-structured and tested. Key areas for contribution:
+
+- Fix hex literal parsing
+- Add support for multi-character operators
+- Implement block comments
+- Add more comprehensive error reporting
+- Begin parser implementation
+
+## Technical Details
+
+- **Language**: Zig
+- **Architecture**: Single-pass lexer with lookahead
+- **Memory Management**: Arena allocator for simplicity
+- **Testing**: Comprehensive unit tests for all components
+- **Output Format**: Space-separated tokens with type prefixes
+
+This is a solid foundation for a compiler project, with clean, well-tested code that correctly implements lexical analysis for a C-like language syntax.
 
 - [GitHub Discussions](https://github.com/tyrbal-lang/tyrbal/discussions)
 - [Discord Server](https://discord.gg/tyrbal)
