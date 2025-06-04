@@ -59,7 +59,7 @@ This project implements **only the first stage** of a compiler - lexical analysi
 
 ## Installation
 
-### Option 1: Install Zig (Recommended)
+### Option 1: Install Zig
 
 1. **Download Zig**:
 
